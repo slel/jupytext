@@ -12,7 +12,7 @@ def test_jupytext_same_as_knitr_spin(r_file, tmpdir):
     # Rmd file generated with spin(hair='R/spin.R', knit=FALSE)
     rmd_file = r_file.replace('R_spin', 'Rmd').replace('.R', '.Rmd')
 
-    with open(rmd_file) as fp:
+    with open(rmd_file, newline='') as fp:
         rmd_spin = fp.read()
 
     assert rmd_spin == rmd_jupytext

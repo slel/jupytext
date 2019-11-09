@@ -35,7 +35,7 @@
 - `jupytext --test textfile.ext` now really compares the text file to its round trip (rather than the corresponding notebook) (#339)
 - Markdown cells that contain code are now preserved in a round trip through the Markdown and R Markdown formats (#361)
 - Code cells with a `%%python3` cell magic are now preserved in a round trip through the Markdown format (#365)
-
+- Jupytext command line preserves CRLF/LF line breaks (#377)
 
 1.2.4 (2019-09-19)
 ------------------

@@ -400,7 +400,7 @@ def jupytext_single_file(nb_file, args, log):
 
             # Round trip from a text file
             else:
-                with open(nb_file) as fp:
+                with open(nb_file, newline='') as fp:
                     org_text = fp.read()
 
                 # If the destination is not ipynb, we convert to/back that format
@@ -624,8 +624,9 @@ def pipe_notebook(notebook, command, fmt='py:percent', update=True, prefix=None)
             tmp_file_args.pop('encoding')
             tmp = NamedTemporaryFile(**tmp_file_args)
         try:
-            tmp.write(text)
             tmp.close()
+            with open(tmp.name, 'w', newline='') as fp:
+                fp.write(text)
 
             exec_command([cmd if cmd != '{}' else tmp.name for cmd in command])
 

@@ -128,8 +128,10 @@ class TextNotebookConverter(NotebookReader, NotebookWriter):
             nbformat_minor=nb.nbformat_minor,
             metadata=deepcopy(metadata or nb.metadata),
             cells=nb.cells)
-
+        line_break = newline(nb)
+        nb.metadata.get('jupytext', {}).pop('use_crlf', False)
         metadata = nb.metadata
+
         default_language = default_language_from_metadata_and_ext(metadata, self.implementation.extension) or 'python'
         self.update_fmt_with_notebook_options(nb.metadata)
         if 'use_runtools' not in self.fmt:
@@ -196,7 +198,14 @@ class TextNotebookConverter(NotebookReader, NotebookWriter):
 
         header.extend([''] * header_lines_to_next_cell)
 
-        return '\n'.join(header + lines)
+        return line_break.join(header + lines)
+
+
+def newline(nb):
+    """Return the newline for the notebook"""
+    if nb.metadata.get('jupytext', {}).get('use_crlf', False):
+        return '\r\n'
+    return '\n'
 
 
 def reads(text, fmt, as_version=nbformat.NO_CONVERT, **kwargs):
@@ -235,6 +244,10 @@ def reads(text, fmt, as_version=nbformat.NO_CONVERT, **kwargs):
         notebook.metadata.setdefault('jupytext', {}).setdefault('text_representation', {}).update(
             {'extension': ext, 'format_name': format_name})
 
+    first_new_line = text.find('\n')
+    if first_new_line > 0 and text[first_new_line - 1] == '\r':
+        notebook.metadata.setdefault('jupytext', {}).setdefault('use_crlf', True)
+
     return notebook
 
 
@@ -263,7 +276,7 @@ def read(fp, as_version=nbformat.NO_CONVERT, fmt=None, **kwargs):
         if not isinstance(fmt, dict):
             fmt = long_form_one_format(fmt)
         fmt.update({'extension': ext})
-        with io.open(fp, encoding='utf-8') as stream:
+        with io.open(fp, encoding='utf-8', newline='') as stream:
             return read(stream, as_version=as_version, fmt=fmt, **kwargs)
 
     if fmt is not None:
@@ -346,7 +359,7 @@ def write(nb, fp, version=nbformat.NO_CONVERT, fmt=None, **kwargs):
         fmt = long_form_one_format(fmt, update={'extension': ext})
         create_prefix_dir(fp, fmt)
 
-        with io.open(fp, 'w', encoding='utf-8') as stream:
+        with io.open(fp, 'w', encoding='utf-8', newline='') as stream:
             write(nb, stream, version=version, fmt=fmt, **kwargs)
             return
     else:
@@ -356,8 +369,8 @@ def write(nb, fp, version=nbformat.NO_CONVERT, fmt=None, **kwargs):
     if isinstance(content, bytes):
         content = content.decode('utf8')
     fp.write(content)
-    if not content.endswith(u'\n'):
-        fp.write(u'\n')
+    if not content.endswith(newline(nb)):
+        fp.write(newline(nb))
 
 
 def create_prefix_dir(nb_file, fmt):
