@@ -204,8 +204,8 @@ class TextNotebookConverter(NotebookReader, NotebookWriter):
 def newline(nb):
     """Return the newline for the notebook"""
     if nb.metadata.get('jupytext', {}).get('use_crlf', False):
-        return '\r\n'
-    return '\n'
+        return u'\r\n'
+    return u'\n'
 
 
 def reads(text, fmt, as_version=nbformat.NO_CONVERT, **kwargs):
