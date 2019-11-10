@@ -466,6 +466,18 @@ def build_jupytext_contents_manager_class(base_contents_manager_class):
             self.drop_paired_notebook(old_path)
             self.update_paired_notebooks(new_path, fmt, formats)
 
+        def open(self, os_path, *args, **kwargs):
+            """Open files with a newline argument to preserve CRLF line breaks"""
+            if not 'b' in kwargs.get('mode', '') and (len(args) and 'b' not in args[0]):
+                kwargs['newline'] = ''
+            return super(JupytextContentsManager, self).open(os_path, *args, **kwargs)
+
+        def atomic_writing(self, os_path, *args, **kwargs):
+            """Open files with a newline argument to preserve CRLF line breaks"""
+            if not 'b' in kwargs.get('mode', '') and (len(args) and 'b' not in args[0]):
+                kwargs['newline'] = ''
+            return super(JupytextContentsManager, self).atomic_writing(os_path, *args, **kwargs)
+
     return JupytextContentsManager
 
 

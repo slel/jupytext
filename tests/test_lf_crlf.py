@@ -44,3 +44,35 @@ def test_crlf_file(tmpdir, text):
     jupytext.write(nb, tmp_md)
     with open(tmp_md, newline='') as fp:
         compare(fp.read(), text.replace('\n', '\r\n'))
+
+
+def test_lf_file_in_contents_manager(tmpdir, text):
+    tmp_md = str(tmpdir.join('file.md'))
+    with open(tmp_md, 'w', newline='\n') as fp:
+        fp.write(text)
+
+    cm = jupytext.TextFileContentsManager()
+    cm.root_dir = str(tmpdir)
+
+    nb = cm.get('file.md')['content']
+    assert 'use_crlf' not in nb.metadata['jupytext']
+
+    cm.save(model=dict(content=nb, type='notebook'), path='file.md')
+    with open(tmp_md, newline='') as fp:
+        compare(fp.read(), text)
+
+
+def test_crlf_file_in_contents_manager(tmpdir, text):
+    tmp_md = str(tmpdir.join('file.md'))
+    with open(tmp_md, 'w', newline='\r\n') as fp:
+        fp.write(text)
+
+    cm = jupytext.TextFileContentsManager()
+    cm.root_dir = str(tmpdir)
+
+    nb = cm.get('file.md')['content']
+    assert 'use_crlf' in nb.metadata['jupytext']
+
+    cm.save(model=dict(content=nb, type='notebook'), path='file.md')
+    with open(tmp_md, newline='') as fp:
+        compare(fp.read(), text.replace('\n', '\r\n'))
