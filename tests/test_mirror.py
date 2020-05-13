@@ -139,6 +139,15 @@ def test_ipynb_to_pandoc(nb_file, no_jupytext_version_number):
     assert_conversion_same_as_mirror(nb_file, "md:pandoc", "ipynb_to_pandoc")
 
 
+@requires_pandoc
+@pytest.mark.parametrize(
+    "nb_file",
+    list_notebooks("ipynb", skip="(functional|Notebook with|flavors|invalid|305)"),
+)
+def test_ipynb_to_org_pandoc(nb_file, no_jupytext_version_number):
+    assert_conversion_same_as_mirror(nb_file, "org", "ipynb_to_org_pandoc")
+
+
 @requires_myst
 @pytest.mark.parametrize(
     "nb_file",
