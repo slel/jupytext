@@ -35,7 +35,7 @@ from .languages import (
     set_main_and_cell_language,
 )
 from .pep8 import pep8_lines_between_cells
-from .pandoc import md_to_notebook, notebook_to_md
+from .pandoc import text_to_notebook, notebook_to_text
 from .myst import myst_extensions, myst_to_notebook, notebook_to_myst, MYST_FORMAT_NAME
 
 
@@ -72,8 +72,13 @@ class TextNotebookConverter(NotebookReader, NotebookWriter):
 
     def reads(self, s, **_):
         """Read a notebook represented as text"""
-        if self.fmt.get("format_name") == "pandoc":
-            return md_to_notebook(s)
+        if (
+            self.fmt.get("format_name") == "pandoc"
+            or self.fmt.get("extension") == ".org"
+        ):
+            return text_to_notebook(
+                s, "org" if self.fmt.get("extension") == ".org" else "markdown"
+            )
 
         if self.fmt.get("format_name") == MYST_FORMAT_NAME:
             return myst_to_notebook(s)
@@ -143,7 +148,10 @@ class TextNotebookConverter(NotebookReader, NotebookWriter):
 
     def writes(self, nb, metadata=None, **kwargs):
         """Return the text representation of the notebook"""
-        if self.fmt.get("format_name") == "pandoc":
+        if (
+            self.fmt.get("format_name") == "pandoc"
+            or self.fmt.get("extension") == ".org"
+        ):
             metadata = insert_jupytext_info_and_filter_metadata(
                 metadata, self.ext, self.implementation
             )
@@ -168,13 +176,15 @@ class TextNotebookConverter(NotebookReader, NotebookWriter):
                         )
                     )
 
-            return notebook_to_md(
-                NotebookNode(
-                    nbformat=nb.nbformat,
-                    nbformat_minor=nb.nbformat_minor,
-                    metadata=metadata,
-                    cells=cells,
-                )
+            filtered_notebook = NotebookNode(
+                nbformat=nb.nbformat,
+                nbformat_minor=nb.nbformat_minor,
+                metadata=metadata,
+                cells=cells,
+            )
+            return notebook_to_text(
+                filtered_notebook,
+                "org" if self.fmt.get("extension") == ".org" else "markdown",
             )
 
         if self.fmt.get(

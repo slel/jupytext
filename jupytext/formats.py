@@ -205,6 +205,16 @@ if is_pandoc_available():
             current_version_number=pandoc_version(),
         )
     )
+    JUPYTEXT_FORMATS.append(
+        NotebookFormatDescription(
+            format_name="pandoc",
+            extension=".org",
+            header_prefix="",
+            cell_reader_class=None,
+            cell_exporter_class=None,
+            current_version_number=pandoc_version(),
+        )
+    )
 
 if is_myst_available():
     JUPYTEXT_FORMATS.extend(

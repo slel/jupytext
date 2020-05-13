@@ -60,14 +60,16 @@ def pandoc_version():
     return version
 
 
-def md_to_notebook(text):
-    """Convert a Markdown text to a Jupyter notebook, using Pandoc"""
+def text_to_notebook(text, pandoc_format_name):
+    """Convert a Markdown/org-mode text to a Jupyter notebook, using Pandoc"""
     tmp_file = tempfile.NamedTemporaryFile(delete=False)
     tmp_file.write(text.encode("utf-8"))
     tmp_file.close()
 
     pandoc(
-        u"--from markdown --to ipynb -s --atx-headers --wrap=preserve --preserve-tabs",
+        u"--from {} --to ipynb -s --atx-headers --wrap=preserve --preserve-tabs".format(
+            pandoc_format_name
+        ),
         tmp_file.name,
         tmp_file.name,
     )
@@ -79,14 +81,16 @@ def md_to_notebook(text):
     return notebook
 
 
-def notebook_to_md(notebook):
-    """Convert a notebook to its Markdown representation, using Pandoc"""
+def notebook_to_text(notebook, pandoc_format_name):
+    """Convert a notebook to its Markdown/org-mode representation, using Pandoc"""
     tmp_file = tempfile.NamedTemporaryFile(delete=False)
     tmp_file.write(ipynb_writes(notebook).encode("utf-8"))
     tmp_file.close()
 
     pandoc(
-        u"--from ipynb --to markdown -s --atx-headers --wrap=preserve --preserve-tabs",
+        u"--from ipynb --to {} -s --atx-headers --wrap=preserve --preserve-tabs".format(
+            pandoc_format_name
+        ),
         tmp_file.name,
         tmp_file.name,
     )
