@@ -1,0 +1,3 @@
+#+BEGIN_SRC python
+  cat = 42
+#+END_SRC

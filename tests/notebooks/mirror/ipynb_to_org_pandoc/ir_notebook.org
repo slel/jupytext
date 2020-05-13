@@ -1,0 +1,12 @@
+This is a jupyter notebook that uses the IR kernel.
+
+#+BEGIN_SRC R
+  sum(1:10)
+#+END_SRC
+
+#+BEGIN_SRC R
+  plot(cars)
+#+END_SRC
+
+#+BEGIN_SRC R
+#+END_SRC

@@ -1,0 +1,115 @@
+* A quick insight at world population
+  :PROPERTIES:
+  :CUSTOM_ID: a-quick-insight-at-world-population
+  :END:
+
+** Collecting population data
+   :PROPERTIES:
+   :CUSTOM_ID: collecting-population-data
+   :END:
+
+In the below we retrieve population data from the
+[[http://www.worldbank.org/][World Bank]]
+using the [[https://github.com/OliverSherouse/wbdata][wbdata]] python package
+
+#+BEGIN_SRC python
+  import pandas as pd
+  import wbdata as wb
+
+  pd.options.display.max_rows = 6
+  pd.options.display.max_columns = 20
+#+END_SRC
+
+Corresponding indicator is found using search method - or, directly,
+the World Bank site.
+
+#+BEGIN_SRC python
+  wb.search_indicators('Population, total')  # SP.POP.TOTL
+  # wb.search_indicators('area')
+  # => https://data.worldbank.org/indicator is easier to use
+#+END_SRC
+
+Now we download the population data
+
+#+BEGIN_SRC python
+  indicators = {'SP.POP.TOTL': 'Population, total',
+                'AG.SRF.TOTL.K2': 'Surface area (sq. km)',
+                'AG.LND.TOTL.K2': 'Land area (sq. km)',
+                'AG.LND.ARBL.ZS': 'Arable land (% of land area)'}
+  data = wb.get_dataframe(indicators, convert_date=True).sort_index()
+  data
+#+END_SRC
+
+World is one of the countries
+
+#+BEGIN_SRC python
+  data.loc['World']
+#+END_SRC
+
+Can we classify over continents?
+
+#+BEGIN_SRC python
+  data.loc[(slice(None), '2017-01-01'), :]['Population, total'].dropna(
+  ).sort_values().tail(60).index.get_level_values('country')
+#+END_SRC
+
+Extract zones manually (in order of increasing population)
+
+#+BEGIN_SRC python
+  zones = ['North America', 'Middle East & North Africa',
+           'Latin America & Caribbean', 'Europe & Central Asia',
+           'Sub-Saharan Africa', 'South Asia',
+           'East Asia & Pacific'][::-1]
+#+END_SRC
+
+And extract population information (and check total is right)
+
+#+BEGIN_SRC python
+  population = data.loc[zones]['Population, total'].swaplevel().unstack()
+  population = population[zones]
+  assert all(data.loc['World']['Population, total'] == population.sum(axis=1))
+#+END_SRC
+
+** Stacked area plot with matplotlib
+   :PROPERTIES:
+   :CUSTOM_ID: stacked-area-plot-with-matplotlib
+   :END:
+
+#+BEGIN_SRC python
+  import matplotlib.pyplot as plt
+#+END_SRC
+
+#+BEGIN_SRC python
+  plt.clf()
+  plt.figure(figsize=(10, 5), dpi=100)
+  plt.stackplot(population.index, population.values.T / 1e9)
+  plt.legend(population.columns, loc='upper left')
+  plt.ylabel('Population count (B)')
+  plt.show()
+#+END_SRC
+
+** Stacked bar plot with plotly
+   :PROPERTIES:
+   :CUSTOM_ID: stacked-bar-plot-with-plotly
+   :END:
+
+Stacked area plots (with cumulated values computed depending on
+selected legends) are
+[[https://github.com/plotly/plotly.js/pull/2960][on their way]] at Plotly. For
+now we just do a stacked bar plot.
+
+#+BEGIN_SRC python
+  import plotly.offline as offline
+  import plotly.graph_objs as go
+
+  offline.init_notebook_mode()
+#+END_SRC
+
+#+BEGIN_SRC python
+  bars = [go.Bar(x=population.index, y=population[zone], name=zone)
+          for zone in zones]
+  fig = go.Figure(data=bars,
+                  layout=go.Layout(title='World population',
+                                   barmode='stack'))
+  offline.iplot(fig)
+#+END_SRC

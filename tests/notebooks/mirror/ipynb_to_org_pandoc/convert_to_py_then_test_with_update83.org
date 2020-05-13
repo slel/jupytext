@@ -1,0 +1,10 @@
+#+BEGIN_SRC python
+  %%time
+
+  print('asdf')
+#+END_SRC
+
+Thanks for jupytext!
+
+#+BEGIN_SRC python
+#+END_SRC

@@ -1,0 +1,18 @@
+#+BEGIN_SRC python
+  param = 4
+#+END_SRC
+
+#+BEGIN_SRC python
+  import pandas as pd
+#+END_SRC
+
+#+BEGIN_SRC python
+  df = pd.DataFrame({'A': [1, 2], 'B': [3 + param, 4]},
+                    index=pd.Index(['x0', 'x1'], name='x'))
+  df
+#+END_SRC
+
+#+BEGIN_SRC python
+  %matplotlib inline
+  df.plot(kind='bar')
+#+END_SRC

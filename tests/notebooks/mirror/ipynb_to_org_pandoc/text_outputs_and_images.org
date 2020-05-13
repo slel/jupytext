@@ -1,0 +1,79 @@
+This notebook contains outputs of many different types: text, HTML, plots and errors.
+
+* Text outputs
+  :PROPERTIES:
+  :CUSTOM_ID: text-outputs
+  :END:
+
+Using =print=, =sys.stdout= and =sys.stderr=
+
+#+BEGIN_SRC python
+  import sys
+  print('using print')
+  sys.stdout.write('using sys.stdout.write')
+  sys.stderr.write('using sys.stderr.write')
+#+END_SRC
+
+#+BEGIN_SRC python
+  import logging
+  logging.debug('Debug')
+  logging.info('Info')
+  logging.warning('Warning')
+  logging.error('Error')
+#+END_SRC
+
+* HTML outputs
+  :PROPERTIES:
+  :CUSTOM_ID: html-outputs
+  :END:
+
+Using =pandas=. Here we find two representations: both text and HTML.
+
+#+BEGIN_SRC python
+  import pandas as pd
+  pd.DataFrame([4])
+#+END_SRC
+
+#+BEGIN_SRC python
+  from IPython.display import display
+  display(pd.DataFrame([5]))
+  display(pd.DataFrame([6]))
+#+END_SRC
+
+* Images
+  :PROPERTIES:
+  :CUSTOM_ID: images
+  :END:
+
+#+BEGIN_SRC python
+  %matplotlib inline
+#+END_SRC
+
+#+BEGIN_SRC python
+  # First plot
+  from matplotlib import pyplot as plt
+  import numpy as np
+  w, h = 3, 3
+  data = np.zeros((h, w, 3), dtype=np.uint8)
+  data[0,:] = [0,255,0]
+  data[1,:] = [0,0,255]
+  data[2,:] = [0,255,0]
+  data[1:3,1:3] = [255, 0, 0]
+  plt.imshow(data)
+  plt.axis('off')
+  plt.show()
+  # Second plot
+  data[1:3,1:3] = [255, 255, 0]
+  plt.imshow(data)
+  plt.axis('off')
+  plt.show()
+#+END_SRC
+
+* Errors
+  :PROPERTIES:
+  :CUSTOM_ID: errors
+  :END:
+
+#+BEGIN_SRC python
+  undefined_variable
+#+END_SRC

@@ -1,0 +1,24 @@
+* Jupyter notebook
+  :PROPERTIES:
+  :CUSTOM_ID: jupyter-notebook
+  :END:
+
+This notebook is a simple jupyter notebook. It only has markdown and code cells. And it does not contain consecutive markdown cells. We start with an addition:
+
+#+BEGIN_SRC python
+  a = 1
+  b = 2
+  a + b
+#+END_SRC
+
+Now we return a few tuples
+
+#+BEGIN_SRC python
+  a, b
+#+END_SRC
+
+#+BEGIN_SRC python
+  a, b, a+b
+#+END_SRC
+
+And this is already the end of the notebook
