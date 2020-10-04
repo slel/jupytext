@@ -1,3 +1,4 @@
+import os
 import pytest
 import nbformat
 from nbformat.v4.nbbase import new_notebook, new_code_cell
@@ -157,4 +158,28 @@ default_notebook_metadata_filter: "jupytext"
 
     jupytext(["--sync", str(tmpdir.join("scripts").join("*.py"))])
 
+    assert tmpdir.join("notebooks").join("test.ipynb").exists()
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        os.path.join("scripts", "test.py"),
+        os.path.join(".", "scripts", "test.py"),
+        os.path.join("scripts", "*.py"),
+        os.path.join(".", "scripts", "*.py"),
+        "scripts/*.py",
+        "./scripts/*.py",
+    ],
+)
+def test_more_tests_inspired_by_629(tmpdir, path):
+    cfg_file = tmpdir.join("jupytext.yml")
+    cfg_file.write(
+        """default_jupytext_formats: "notebooks///ipynb,scripts///py:percent"
+default_notebook_metadata_filter: "jupytext"
+"""
+    )
+    os.chdir(str(tmpdir))
+    tmpdir.mkdir("scripts").join("test.py").write("# %%\n 1+1\n")
+    jupytext(["--sync", path])
     assert tmpdir.join("notebooks").join("test.ipynb").exists()
