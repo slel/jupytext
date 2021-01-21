@@ -113,21 +113,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Cache conda
-        uses: actions/cache@v1
-        with:
-          path: ~/conda_pkgs_dir
-          key: conda-${{ matrix.os }}-python-${{ matrix.python-version }}-${{ hashFiles('environment-ci.yml') }}
       - name: Setup Miniconda
         uses: conda-incubator/setup-miniconda@v2
         with:
-          auto-update-conda: true
-          auto-activate-base: false
-          activate-environment: jupytext-ci
           python-version: ${{ matrix.python-version }}
           channels: defaults,conda-forge
+          channel-priority: true
+          mamba-version: "*"
+          activate-environment: jupytext-ci
           environment-file: environment-ci.yml
-          use-only-tar-bz2: true
       - name: Lint with flake8
         shell: pwsh
         run: |
