@@ -187,9 +187,8 @@ jobs:
         - name: Upload coverage
           uses: codecov/codecov-action@v1
 
-  publish:
-    name: Publish to PyPi
-    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
+  build:
+    name: Build Package
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source
@@ -202,6 +201,15 @@ jobs:
         run: |
           pip install wheel jupyter-packaging jupyterlab>=3
           BUILD_JUPYTERLAB_EXTENSION=1 python setup.py sdist bdist_wheel
+          # Don't publish a tar.gz file over 1MB  (Issue #730)
+          if (($(wc -c < dist/*.tar.gz) > 1000000)); then exit 1; fi
+
+  publish:
+    name: Publish to PyPi
+    needs: build
+    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
+    runs-on: ubuntu-latest
+    steps:
       - name: Publish
         uses: pypa/gh-action-pypi-publish@v1.1.0
         with:
