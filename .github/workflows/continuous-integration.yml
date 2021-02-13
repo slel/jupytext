@@ -204,11 +204,17 @@ jobs:
           # Don't publish a tar.gz file over 1MB  (Issue #730)
           if (($(wc -c < dist/*.tar.gz) > 1000000)); then exit 1; fi
           # node_modules should not be in the package
-          if (($(tar -tf dist/*.tar.gz | grep node_modules | wc -l)>0)); then exit 1; fi
+          if (($(tar -tf dist/*.tar.gz | grep node_modules | wc -l)>0)); then echo "node_modules should not be included" && exit 1; fi
           # Install
           pip install dist/*.tar.gz
-          # Check that both the notebook and the lab extensions are there
+          echo "Install went OK"
+          echo "Check that both the notebook and the lab extensions are there"
+          echo "ls /etc/share"
+          ls /etc/share
+          echo "ls ~/.local/share"
           export SHARED_FOLDER=~/.local/share
+          ls $SHARED_FOLDER
+          tree ${SHARED_FOLDER}/jupyter
           test -f ${SHARED_FOLDER}/jupyter/nbextensions/jupytext/index.js
           test -f ${SHARED_FOLDER}/jupyter/labextensions/jupyterlab-jupytext/package.json
   publish:
