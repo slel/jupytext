@@ -208,12 +208,11 @@ jobs:
           # Install
           pip install dist/*.tar.gz
           echo "Install went OK"
+          echo "List the jupyter folders"
+          find / -name jupyter -type d
           echo "Check that both the notebook and the lab extensions are there"
-          echo "ls /etc/share"
-          ls /etc/share
           echo "ls ~/.local/share"
           export SHARED_FOLDER=~/.local/share
-          ls $SHARED_FOLDER
           tree ${SHARED_FOLDER}/jupyter
           test -f ${SHARED_FOLDER}/jupyter/nbextensions/jupytext/index.js
           test -f ${SHARED_FOLDER}/jupyter/labextensions/jupyterlab-jupytext/package.json
