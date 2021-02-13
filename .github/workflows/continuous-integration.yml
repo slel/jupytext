@@ -188,7 +188,7 @@ jobs:
           uses: codecov/codecov-action@v1
 
   build:
-    name: Build Package
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source
@@ -203,7 +203,14 @@ jobs:
           BUILD_JUPYTERLAB_EXTENSION=1 python setup.py sdist bdist_wheel
           # Don't publish a tar.gz file over 1MB  (Issue #730)
           if (($(wc -c < dist/*.tar.gz) > 1000000)); then exit 1; fi
-
+          # node_modules should not be in the package
+          if (($(tar -tf dist/*.tar.gz | grep node_modules | wc -l)>0)); then exit 1; fi
+          # Install
+          pip install dist/*.tar.gz
+          # Check that both the notebook and the lab extensions are there
+          export SHARED_FOLDER=~/.local/share
+          test -f ${SHARED_FOLDER}/jupyter/nbextensions/jupytext/index.js
+          test -f ${SHARED_FOLDER}/jupyter/labextensions/jupyterlab-jupytext/package.json
   publish:
     name: Publish to PyPi
     needs: build
