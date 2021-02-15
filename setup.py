@@ -103,7 +103,7 @@ else:
         install_npm,
     )
 
-    lab_path = path.join(this_directory, "jupytext", "labextension")
+    lab_path = path.join(this_directory, "packages", "labextension")
     nb_path = path.join(this_directory, "jupytext", "nbextension")
 
     jupyter_config_path = path.join(this_directory, "jupyter-config")
