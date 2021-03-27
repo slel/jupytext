@@ -7,6 +7,7 @@ import re
 import shutil
 import time
 
+import nbformat
 import pytest
 from nbformat.v4.nbbase import new_code_cell, new_markdown_cell, new_notebook
 from tornado.web import HTTPError
@@ -14,7 +15,11 @@ from tornado.web import HTTPError
 import jupytext
 from jupytext.cli import jupytext as jupytext_cli
 from jupytext.compare import compare, compare_cells, compare_notebooks
-from jupytext.formats import auto_ext_from_metadata, read_format_from_metadata
+from jupytext.formats import (
+    auto_ext_from_metadata,
+    long_form_one_format,
+    read_format_from_metadata,
+)
 from jupytext.header import header_to_metadata_and_cell
 from jupytext.jupytext import read, write, writes
 from jupytext.kernels import kernelspec_from_language
@@ -22,6 +27,7 @@ from jupytext.kernels import kernelspec_from_language
 from .utils import (
     list_notebooks,
     notebook_model,
+    requires_myst,
     requires_pandoc,
     requires_sphinx_gallery,
 )
@@ -393,12 +399,12 @@ def test_load_save_rename_nbpy_default_config(nb_file, tmpdir):
 
 @pytest.mark.parametrize("nb_file", list_notebooks("ipynb_py"))
 def test_load_save_rename_non_ascii_path(nb_file, tmpdir):
-    tmp_ipynb = u"notebôk.ipynb"
-    tmp_nbpy = u"notebôk.nb.py"
+    tmp_ipynb = "notebôk.ipynb"
+    tmp_nbpy = "notebôk.nb.py"
 
     cm = jupytext.TextFileContentsManager()
     cm.formats = "ipynb,.nb.py"
-    tmpdir = u"" + str(tmpdir)
+    tmpdir = "" + str(tmpdir)
     cm.root_dir = tmpdir
 
     # open ipynb, save nb.py, reopen
@@ -416,27 +422,27 @@ def test_load_save_rename_non_ascii_path(nb_file, tmpdir):
     cm.save(model=notebook_model(nb), path=tmp_ipynb)
 
     # rename notebôk.nb.py to nêw.nb.py
-    cm.rename(tmp_nbpy, u"nêw.nb.py")
+    cm.rename(tmp_nbpy, "nêw.nb.py")
     assert not os.path.isfile(os.path.join(tmpdir, tmp_ipynb))
     assert not os.path.isfile(os.path.join(tmpdir, tmp_nbpy))
 
-    assert os.path.isfile(os.path.join(tmpdir, u"nêw.ipynb"))
-    assert os.path.isfile(os.path.join(tmpdir, u"nêw.nb.py"))
+    assert os.path.isfile(os.path.join(tmpdir, "nêw.ipynb"))
+    assert os.path.isfile(os.path.join(tmpdir, "nêw.nb.py"))
 
     # rename nêw.ipynb to notebôk.ipynb
-    cm.rename(u"nêw.ipynb", tmp_ipynb)
+    cm.rename("nêw.ipynb", tmp_ipynb)
     assert os.path.isfile(os.path.join(tmpdir, tmp_ipynb))
     assert os.path.isfile(os.path.join(tmpdir, tmp_nbpy))
 
-    assert not os.path.isfile(os.path.join(tmpdir, u"nêw.ipynb"))
-    assert not os.path.isfile(os.path.join(tmpdir, u"nêw.nb.py"))
+    assert not os.path.isfile(os.path.join(tmpdir, "nêw.ipynb"))
+    assert not os.path.isfile(os.path.join(tmpdir, "nêw.nb.py"))
 
 
 @pytest.mark.parametrize("nb_file", list_notebooks("ipynb_py")[:1])
 def test_outdated_text_notebook(nb_file, tmpdir):
     # 1. write py ipynb
-    tmp_ipynb = u"notebook.ipynb"
-    tmp_nbpy = u"notebook.py"
+    tmp_ipynb = "notebook.ipynb"
+    tmp_nbpy = "notebook.py"
 
     cm = jupytext.TextFileContentsManager()
     cm.formats = "py,ipynb"
@@ -741,8 +747,8 @@ def test_pair_notebook_with_dot(nb_file, tmpdir):
 @pytest.mark.parametrize("nb_file", list_notebooks("ipynb_py")[:1])
 def test_preferred_format_allows_to_read_others_format(nb_file, tmpdir):
     # 1. write py ipynb
-    tmp_ipynb = u"notebook.ipynb"
-    tmp_nbpy = u"notebook.py"
+    tmp_ipynb = "notebook.ipynb"
+    tmp_nbpy = "notebook.py"
 
     cm = jupytext.TextFileContentsManager()
     cm.preferred_jupytext_formats_save = "py:light"
@@ -782,7 +788,7 @@ def test_preferred_format_allows_to_read_others_format(nb_file, tmpdir):
 
 
 def test_preferred_formats_read_auto(tmpdir):
-    tmp_py = u"notebook.py"
+    tmp_py = "notebook.py"
     with open(str(tmpdir.join(tmp_py)), "w") as script:
         script.write(
             """# cell one
@@ -1847,3 +1853,28 @@ def test_config_jupytext_jupyter_fs_meta_manager(tmpdir):
         "script.py",
         "script.ipynb",
     }
+
+
+@pytest.mark.parametrize("fmt", ["md", "md:myst", "py:light", "py:percent"])
+def test_save_in_cm_matches_cli(tmpdir, cwd_tmpdir, python_notebook, fmt):
+    if "myst" in fmt:
+        requires_myst()
+
+    nbformat.write(python_notebook, str(tmpdir.join("notebook.ipynb")))
+    jupytext_cli(["--to", fmt, "notebook.ipynb"])
+
+    long_fmt = long_form_one_format(fmt)
+    name = f"notebook{long_fmt['extension']}"
+    path = tmpdir.join(name)
+
+    cli_text = path.read()
+    path.remove()
+
+    cm = jupytext.TextFileContentsManager()
+    cm.root_dir = str(tmpdir)
+    python_notebook.metadata["jupytext"] = {"text_representation": long_fmt}
+
+    cm.save(model=notebook_model(python_notebook), path=name)
+    cm_text = path.read()
+
+    compare(cm_text, cli_text)

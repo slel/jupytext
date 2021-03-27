@@ -53,7 +53,7 @@ def jupytext_repo_rev(jupytext_repo_root):
 @pytest.fixture()
 def python_notebook():
     return new_notebook(
-        cells=[new_markdown_cell("A short notebook")],
+        cells=[new_markdown_cell("A short notebook"), new_code_cell("1 + 1")],
         # We need a Python kernel here otherwise Jupytext is going to add
         # the information that this is a Python notebook when we sync the
         # .py and .ipynb files
@@ -62,7 +62,16 @@ def python_notebook():
                 "display_name": "Python 3",
                 "language": "python",
                 "name": "python_kernel",
-            }
+            },
+            "language_info": {
+                "codemirror_mode": {"name": "ipython", "version": 3},
+                "file_extension": ".py",
+                "mimetype": "text/x-python",
+                "name": "python",
+                "nbconvert_exporter": "python",
+                "pygments_lexer": "ipython3",
+                "version": "3.7.3",
+            },
         },
     )
 
