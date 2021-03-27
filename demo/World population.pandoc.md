@@ -1,13 +1,13 @@
 ---
 jupyter:
   jupytext:
-    cell_markers: 'region,endregion'
-    formats: 'ipynb,.pct.py:percent,.lgt.py:light,.spx.py:sphinx,md,Rmd,.pandoc.md:pandoc'
+    cell_markers: region,endregion
+    formats: "ipynb,.pct.py:percent,.lgt.py:light,.spx.py:sphinx,md,Rmd,.pandoc.md:pandoc,.myst.md:myst"
     text_representation:
-      extension: '.md'
+      extension: .md
       format_name: pandoc
-      format_version: '2.7.2'
-      jupytext_version: '1.1.0'
+      format_version: 2.11.4
+      jupytext_version: 1.11.1
   kernelspec:
     display_name: Python 3
     language: python

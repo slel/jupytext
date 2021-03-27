@@ -1,11 +1,12 @@
 ---
 jupytext:
+  cell_markers: region,endregion
   formats: ipynb,.pct.py:percent,.lgt.py:light,.spx.py:sphinx,md,Rmd,.pandoc.md:pandoc,.myst.md:myst
   text_representation:
-    extension: '.md'
+    extension: .md
     format_name: myst
-    format_version: '0.7'
-    jupytext_version: 1.4.0+dev
+    format_version: 0.13
+    jupytext_version: 1.11.1
 kernelspec:
   display_name: Python 3
   language: python
@@ -95,13 +96,6 @@ plt.show()
 
 ## Stacked bar plot with plotly
 
-+++
-
-Stacked area plots (with cumulated values computed depending on
-selected legends) are
-[on their way](https://github.com/plotly/plotly.js/pull/2960) at Plotly. For
-now we just do a stacked bar plot.
-
 ```{code-cell} ipython3
 import plotly.offline as offline
 import plotly.graph_objs as go
@@ -110,10 +104,9 @@ offline.init_notebook_mode()
 ```
 
 ```{code-cell} ipython3
-bars = [go.Bar(x=population.index, y=population[zone], name=zone)
+data = [go.Scatter(x=population.index, y=population[zone], name=zone, stackgroup='World')
         for zone in zones]
-fig = go.Figure(data=bars,
-                layout=go.Layout(title='World population',
-                                 barmode='stack'))
+fig = go.Figure(data=data,
+                layout=go.Layout(title='World population'))
 offline.iplot(fig)
 ```

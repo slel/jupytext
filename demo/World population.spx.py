@@ -2,12 +2,12 @@
 # jupyter:
 #   jupytext:
 #     cell_markers: region,endregion
-#     formats: ipynb,.pct.py:percent,.lgt.py:light,.spx.py:sphinx,md,Rmd,.pandoc.md:pandoc
+#     formats: ipynb,.pct.py:percent,.lgt.py:light,.spx.py:sphinx,md,Rmd,.pandoc.md:pandoc,.myst.md:myst
 #     text_representation:
 #       extension: .py
 #       format_name: sphinx
 #       format_version: '1.1'
-#       jupytext_version: 1.1.0
+#       jupytext_version: 1.11.1
 #   kernelspec:
 #     display_name: Python 3
 #     language: python

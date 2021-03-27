@@ -2,25 +2,29 @@
 # jupyter:
 #   jupytext:
 #     cell_markers: region,endregion
-#     formats: ipynb,.pct.py:percent,.lgt.py:light,.spx.py:sphinx,md,Rmd,.pandoc.md:pandoc
+#     formats: ipynb,.pct.py:percent,.lgt.py:light,.spx.py:sphinx,md,Rmd,.pandoc.md:pandoc,.myst.md:myst
 #     text_representation:
 #       extension: .py
 #       format_name: light
-#       format_version: '1.4'
-#       jupytext_version: 1.1.0
+#       format_version: '1.5'
+#       jupytext_version: 1.11.1
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
 #     name: python3
 # ---
 
-# # A quick insight at world population
-#
-# ## Collecting population data
-#
-# In the below we retrieve population data from the
-# [World Bank](http://www.worldbank.org/)
-# using the [wbdata](https://github.com/OliverSherouse/wbdata) python package
+# region [markdown]
+"""
+# A quick insight at world population
+
+## Collecting population data
+
+In the below we retrieve population data from the
+[World Bank](http://www.worldbank.org/)
+using the [wbdata](https://github.com/OliverSherouse/wbdata) python package
+"""
+# endregion
 
 # region
 import pandas as pd
